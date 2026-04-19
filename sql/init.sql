@@ -35,7 +35,7 @@ CREATE TABLE empresa (
 CREATE TABLE clientes (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nome VARCHAR(100) NOT NULL,
-  cpf VARCHAR(14),
+  cpf VARCHAR(14),  
   telefone VARCHAR(20),
   email VARCHAR(100),
   endereco_id INT,
@@ -93,6 +93,7 @@ CREATE TABLE produtos (
   preco_venda DECIMAL(10,2) NOT NULL,
   estoque INT NOT NULL DEFAULT 0,
   estoque_minimo INT DEFAULT 0,
+  imagem VARCHAR(255),
   data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (categoria_id) REFERENCES categorias(id)
 );
@@ -179,6 +180,9 @@ CREATE TABLE logs (
   FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
+-- ========================
+-- VIEWS
+-- ========================
 
 CREATE OR REPLACE VIEW vw_comprovante_venda AS
 SELECT 
@@ -198,6 +202,7 @@ CREATE OR REPLACE VIEW vw_itens_vendidos AS
 SELECT 
   iv.venda_id,
   p.nome AS produto,
+  p.imagem,
   cat.nome AS categoria,
   iv.quantidade,
   iv.preco_unitario,
@@ -206,19 +211,11 @@ FROM itens_venda iv
 JOIN produtos p ON iv.produto_id = p.id
 LEFT JOIN categorias cat ON p.categoria_id = cat.id;
 
-CREATE OR REPLACE VIEW vw_pagamentos_venda AS
-SELECT 
-  v.id AS id_venda,
-  v.data_venda,
-  pg.tipo,
-  pg.valor_pago
-FROM vendas v
-JOIN pagamentos pg ON v.id = pg.venda_id;
-
 CREATE OR REPLACE VIEW vw_produtos_estoque_baixo AS
 SELECT 
   id,
   nome,
+  imagem,
   estoque,
   estoque_minimo
 FROM produtos
@@ -228,10 +225,11 @@ CREATE OR REPLACE VIEW vw_produtos_mais_vendidos AS
 SELECT 
   p.id,
   p.nome AS produto,
+  p.imagem,
   SUM(iv.quantidade) AS total_vendido
 FROM itens_venda iv
 JOIN produtos p ON iv.produto_id = p.id
-GROUP BY p.id, p.nome
+GROUP BY p.id, p.nome, p.imagem
 ORDER BY total_vendido DESC;
 
 CREATE OR REPLACE VIEW vw_total_vendido_por_dia AS

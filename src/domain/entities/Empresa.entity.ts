@@ -19,7 +19,7 @@ export class EmpresaEntity {
   @Column({ type: 'varchar', length: 20 })
   telefone: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 100, unique: true })
   email: string;
 
   @Column({ type: 'int', nullable: true })

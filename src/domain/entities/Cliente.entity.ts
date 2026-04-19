@@ -25,7 +25,7 @@ export class ClienteEntity {
   @Column({ type: 'varchar', length: 11 })
   telefone: string;
 
-  @Column({ type: 'varchar', length: 11 })
+  @Column({ type: 'varchar', length: 100, unique: true })
   email: string;
 
   @Column({ type: 'int', nullable: true })

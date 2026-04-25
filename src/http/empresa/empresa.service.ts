@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { EmpresaEntity } from 'src/domain/entities';
-import { Repository } from 'typeorm';
+import { EmpresaRepository } from 'src/infra/repos/Empresa.repository';
 
 @Injectable()
 export class EmpresaService {
-  constructor(
-    @InjectRepository(EmpresaEntity)
-    private readonly empresaRepository: Repository<EmpresaEntity>,
-  ) {}
+  constructor(private readonly empresaRepository: EmpresaRepository) {}
+
+  getEmpresa(id: string) {
+    return this.empresaRepository.getEmpresaById(id);
+  }
 }

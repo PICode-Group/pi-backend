@@ -1,11 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ProdutoEntity } from './Produto.entity';
 
 @Entity('categorias')
 export class CategoriaEntity {
   constructor() {}
-  @PrimaryColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({ type: 'varchar', length: 80, unique: true })
   nome: string;

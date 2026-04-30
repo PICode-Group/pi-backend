@@ -14,7 +14,7 @@ import { VendaEntity } from './Venda.entity';
 export class ClienteEntity {
   constructor() {}
   @PrimaryColumn('uuid')
-  id: string;
+  id: number;
 
   @Column({ type: 'varchar', length: 64 })
   nome: string;

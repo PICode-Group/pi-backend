@@ -1,35 +1,58 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoriaEntity } from 'src/domain/entities';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
+import { findAllCategoriaDto } from './dto/find-all-categoria.dto';
 
 @Injectable()
 export class CategoriaService {
   constructor(
       @InjectRepository(CategoriaEntity)
-      private readonly clientesRepository: Repository<CategoriaEntity>,
+      private readonly categoriaRepository: Repository<CategoriaEntity>,
     ) {}
     
-   async create(createCategoriaDto: CreateCategoriaDto) {
-    const categoria = await this.clientesRepository.create(createCategoriaDto);
-    return this.clientesRepository.save(categoria);
+  create(createCategoriaDto: CreateCategoriaDto) {
+    const categoria = this.categoriaRepository.create(createCategoriaDto);
+    return this.categoriaRepository.save(categoria);
   }
 
-  findAll() {
-    return this.clientesRepository.find();
+  async findAll(query: findAllCategoriaDto) {
+    return await this.categoriaRepository.find({
+      where: {
+        nome: Like(`%${query.nome}%`)
+      }
+    })
   }
 
   findOne(id: number) {
-    return this.clientesRepository.findBy({id});
+    const categoria = this.categoriaRepository.findBy({id});
+
+    if (!categoria) {
+      throw new NotFoundException(`Categoria ${id} não existe.`)
+    }
+
+    return categoria;
   }
 
-  update(id: number, updateCategoriaDto: UpdateCategoriaDto) {
-    return `This action updates a #${id} categoria`;
+  async update(id: number, updateCategoriaDto: UpdateCategoriaDto) {
+    let categoria = await this.categoriaRepository.findOneBy({id})
+
+    if (!categoria) {
+      throw new NotFoundException(`Categoria ${id} não existe.`)
+    }
+
+    if(updateCategoriaDto.nome) {
+      categoria.nome = updateCategoriaDto.nome
+    } 
+
+    await this.categoriaRepository.save(categoria)
+
+    return categoria;
   }
 
   remove(id: number) {
-    return this.clientesRepository.delete(id);
+    return this.categoriaRepository.delete(id);
   }
 }

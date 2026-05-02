@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import { EmpresaService } from './empresa.service';
-import { UpdateEmpresaDto } from 'src/domain/DTOs/UpdateEmpresa.dto';
+import { UpdateEmpresaDto } from 'src/domain/DTOs/Empresa.dto';
 
 @Controller('empresa')
 export class EmpresaController {

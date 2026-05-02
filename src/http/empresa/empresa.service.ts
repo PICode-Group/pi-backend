@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { UpdateEmpresaDto } from 'src/domain/DTOs/UpdateEmpresa.dto';
+import { UpdateEmpresaDto } from 'src/domain/DTOs/Empresa.dto';
 import { EmpresaEntity } from 'src/domain/entities';
 import { EmpresaRepository } from 'src/infra/repos/Empresa.repository';
 

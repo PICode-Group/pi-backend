@@ -1,7 +1,6 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotFoundError } from 'rxjs';
-import { UpdateEmpresaDto } from 'src/domain/DTOs/UpdateEmpresa.dto';
+import { UpdateEmpresaDto } from 'src/domain/DTOs/Empresa.dto';
 import { EmpresaEntity } from 'src/domain/entities';
 import { Repository } from 'typeorm';
 

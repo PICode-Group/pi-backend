@@ -13,7 +13,7 @@ export class LogService {
   async allLogs() {
     const logs = await this.logRepository.find();
 
-    if (!logs) {
+    if (logs.length == 0) {
       return 'Nenhum log registrado!';
     }
 

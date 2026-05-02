@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { EmpresaModule } from './http/empresa/empresa.module';
 import { EnderecoModule } from './http/endereco/endereco.module';
 import { EntradaEstoqueModule } from './http/entrada-estoque/entrada-estoque.module';
@@ -35,7 +33,7 @@ import { ClienteModule } from './http/cliente/cliente.module';
     UsuarioModule,
     VendaModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

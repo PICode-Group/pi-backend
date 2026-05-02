@@ -9,4 +9,14 @@ export class LogService {
     @InjectRepository(LogEntity)
     private readonly logRepository: Repository<LogEntity>,
   ) {}
+
+  async allLogs() {
+    const logs = await this.logRepository.find();
+
+    if (logs.length == 0) {
+      return 'Nenhum log registrado!';
+    }
+
+    return logs;
+  }
 }

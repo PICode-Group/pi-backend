@@ -3,7 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   OneToMany,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { VendaEntity } from './Venda.entity';
 import { EntradaEstoqueEntity } from './EntradaEstoque.entity';
@@ -22,7 +22,7 @@ export enum StatusUsuario {
 @Entity('usuarios')
 export class UsuarioEntity {
   constructor() {}
-  @PrimaryColumn('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'varchar', length: 100 })

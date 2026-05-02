@@ -1,7 +1,12 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { LogService } from 'src/http/log/log.service';
 
 @Controller('logs')
 export class LogController {
   constructor(private readonly logService: LogService) {}
+
+  @Get()
+  getAllLogs() {
+    return this.logService.allLogs();
+  }
 }

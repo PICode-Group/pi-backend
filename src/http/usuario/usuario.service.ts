@@ -33,7 +33,7 @@ export class UsuarioService {
       throw new ConflictException('Usuário já existe com este email');
     }
 
-    return this.usuarioRepository.createUsuario(createUsuarioDto);
+    return this.usuarioRepository.registrarUsuario(createUsuarioDto);
   }
 
   async deleteUserById(id: string) {

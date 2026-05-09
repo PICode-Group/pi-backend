@@ -1,9 +1,13 @@
-import { BadRequestException } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LoginDto } from 'src/domain/DTOs/Login.dto';
+import { JwtService } from '@nestjs/jwt';
 import { CreateUsuarioDto } from 'src/domain/DTOs/Usuario.dto';
 import { StatusUsuario, UsuarioEntity } from 'src/domain/entities';
 import { Repository } from 'typeorm';
 
+@Injectable()
 export class UsuarioRepository {
   constructor(
     @InjectRepository(UsuarioEntity)
@@ -14,12 +18,21 @@ export class UsuarioRepository {
     return await this.usuarioRepository.findOneBy({ id });
   }
 
-  async createUsuario(createUsuarioDto: CreateUsuarioDto) {
-    const user = this.usuarioRepository.create(createUsuarioDto);
+  async registrarUsuario(createUsuarioDto: CreateUsuarioDto) {
+    const usuario = this.usuarioRepository.create(createUsuarioDto);
+    await this.usuarioRepository.save(usuario);
 
-    await this.usuarioRepository.save(user);
+    return usuario;
+  }
 
-    return user;
+  async validateUser(loginDto: LoginDto): Promise<any> {
+    const usuario = await this.findUserByEmail(loginDto.login);
+
+    if (usuario && (await usuario.validatePassword(loginDto.senha))) {
+      const { senha, ...result } = usuario;
+      return result;
+    }
+    return null;
   }
 
   async deleteUser(usuario: UsuarioEntity) {
@@ -27,9 +40,9 @@ export class UsuarioRepository {
       status: StatusUsuario.INATIVO,
     });
 
-    if (usuarioAtualizado.affected < 0) {
+    if (usuarioAtualizado.affected === 0) {
       throw new BadRequestException(
-        'Não foi possível atualizar usuário apartir das informações fornecidas!',
+        'Não foi possível atualizar usuário a partir das informações fornecidas!',
       );
     }
 

@@ -9,6 +9,6 @@ import { UsuarioRepository } from 'src/infra/repos/usuario.repository';
   imports: [TypeOrmModule.forFeature([UsuarioEntity])],
   controllers: [UsuarioController],
   providers: [UsuarioService, UsuarioRepository],
-  exports: [UsuarioService],
+  exports: [UsuarioService, UsuarioRepository],
 })
 export class UsuarioModule {}

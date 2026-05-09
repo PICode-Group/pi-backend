@@ -2,10 +2,10 @@
 
 |ID|Funcionalidade|Descrição|Endpoint|
 |---|---|---|---|
-|A1|Login de usuário|Autenticar com login/senha, retornar token|`POST /auth/login`|
+|A1 (FEITO)|Login de usuário|Autenticar com login/senha, retornar token|`POST /auth/login`|
 |A2|CRUD de usuários|Cadastrar, listar, editar, excluir usuários (admin only)|`GET/POST/PUT/DELETE /usuarios`|
-|A3|Dados da empresa|Obter/editar informações da loja|`GET/PUT /empresa`|
-|A4|Logs do sistema|Listar logs com filtros (usuário, ação, data)|`GET /logs`|
+|A3 (FEITO)|Dados da empresa|Obter/editar informações da loja|`GET/PUT /empresa`|
+|A4 (FEITO)|Logs do sistema|Listar logs com filtros (usuário, ação, data)|`GET /logs`|
 
 ---
 
@@ -13,7 +13,7 @@
 
 |ID|Funcionalidade|Descrição|Endpoint|
 |---|---|---|---|
-|C1|CRUD de categorias|Cadastrar, listar, editar, excluir categorias|`GET/POST/PUT/DELETE /categorias`|
+|C1 (FEITO)|CRUD de categorias|Cadastrar, listar, editar, excluir categorias|`GET/POST/PUT/DELETE /categorias`|
 |C2|CRUD de clientes|Com endereço integrado|`GET/POST/PUT/DELETE /clientes`|
 |C3|CRUD de fornecedores|Com endereço integrado|`GET/POST/PUT/DELETE /fornecedores`|
 |C4|CRUD de produtos|Com categoria, preços, estoque inicial, código de barras|`GET/POST/PUT/DELETE /produtos`|

@@ -14,7 +14,10 @@ import { EnvModule } from './config';
 import { DatabaseModule } from './database/database.module';
 import { CategoriaModule } from './http/categoria/categoria.module';
 import { ClienteModule } from './http/cliente/cliente.module';
-
+import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
   imports: [
@@ -33,8 +36,18 @@ import { ClienteModule } from './http/cliente/cliente.module';
     ProdutoModule,
     UsuarioModule,
     VendaModule,
+    AuthModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard, // Primeiro autentica
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard, // Depois verifica roles
+    },
+  ],
 })
 export class AppModule {}

@@ -1,4 +1,6 @@
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -8,6 +10,8 @@ import {
 import { VendaEntity } from './Venda.entity';
 import { EntradaEstoqueEntity } from './EntradaEstoque.entity';
 import { LogEntity } from './Log.entity';
+
+import * as bcrypt from 'bcrypt';
 
 export enum TipoUsuario {
   ADMIN = 'ADMIN',
@@ -51,4 +55,16 @@ export class UsuarioEntity {
 
   @OneToMany(() => LogEntity, (log) => log.usuario)
   logs: LogEntity[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    if (this.senha) {
+      this.senha = await bcrypt.hash(this.senha, 10);
+    }
+  }
+
+  async validatePassword(senha: string): Promise<boolean> {
+    return bcrypt.compare(senha, this.senha);
+  }
 }

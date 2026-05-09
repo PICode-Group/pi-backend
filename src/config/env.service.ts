@@ -3,13 +3,13 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class EnvService {
   private readonly defaults: Record<string, any> = {
-    DB_PORT: 3307,
-    DB_RETRY_ATTEMPTS: 3,
-    DB_RETRY_DELAY: 3000,
-    DB_CONNECTION_LIMIT: 10,
-    DB_CONNECT_TIMEOUT: 10000,
-    DB_SYNCHRONIZE: false,
-    NODE_ENV: 'development',
+    DB_PORT: process.env.DB_PORT,
+    DB_RETRY_ATTEMPTS: process.env.DB_RETRY_ATTEMPTS,
+    DB_RETRY_DELAY: process.env.DB_RETRY_DELAY,
+    DB_CONNECTION_LIMIT: process.env.DB_CONNECTION_LIMIT,
+    DB_CONNECT_TIMEOUT: process.env.DB_CONNECT_TIMEOUT,
+    DB_SYNCHRONIZE: process.env.DB_SYNCHRONIZE,
+    NODE_ENV: process.env.NODE_ENV,
   };
 
   get(key: string): any {

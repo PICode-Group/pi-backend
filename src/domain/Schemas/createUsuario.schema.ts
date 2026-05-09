@@ -9,7 +9,7 @@ export const createUsuarioSchema = z
       .min(5)
       .max(50),
     senha: z.string().min(8).max(255),
-    tipo: z.enum(TipoUsuario).default(TipoUsuario.ADMIN),
+    tipo: z.enum(TipoUsuario).default(TipoUsuario.VENDEDOR),
     status: z.enum(StatusUsuario).default(StatusUsuario.ATIVO),
   })
   .strict();

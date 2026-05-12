@@ -22,7 +22,7 @@ export class ClienteEntity {
   @Column({ type: 'varchar', length: 14, unique: true })
   cpf: string;
 
-  @Column({ type: 'varchar', length: 11 })
+  @Column({ type: 'varchar', length: 20 })
   telefone: string;
 
   @Column({ type: 'varchar', length: 100, unique: true })

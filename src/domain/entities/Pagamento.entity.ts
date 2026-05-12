@@ -21,8 +21,8 @@ export class PagamentoEntity {
   @PrimaryColumn('uuid')
   id: string;
 
-  @Column({ type: 'int', nullable: false })
-  venda_id: number;
+  @Column({ name: 'venda_id', nullable: false })
+  venda_id: string;
 
   @ManyToOne(() => VendaEntity, (venda) => venda.pagamentos, {
     nullable: false,

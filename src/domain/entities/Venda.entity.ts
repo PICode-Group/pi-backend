@@ -24,8 +24,8 @@ export class VendaEntity {
   @PrimaryColumn('uuid')
   id: string;
 
-  @Column({ type: 'int', nullable: true })
-  cliente_id: number;
+  @Column({ name: 'cliente_id', nullable: true })
+  cliente_id: string;
 
   @ManyToOne(() => ClienteEntity, (cliente) => cliente.vendas, {
     nullable: true,
@@ -33,8 +33,8 @@ export class VendaEntity {
   @JoinColumn({ name: 'cliente_id' })
   cliente: ClienteEntity;
 
-  @Column({ type: 'int', nullable: false })
-  usuario_id: number;
+  @Column({ name: 'usuario_id', nullable: false })
+  usuario_id: string;
 
   @ManyToOne(() => UsuarioEntity, (usuario) => usuario.vendas, {
     nullable: false,

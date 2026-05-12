@@ -1,10 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCategoriaDto } from './dto/create-categoria.dto';
-import { UpdateCategoriaDto } from './dto/update-categoria.dto';
+import { CreateCategoriaDto, UpdateCategoriaDto, FindAllCategoriaDto } from './dto/categoria.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoriaEntity } from 'src/domain/entities';
 import { Repository, Like } from 'typeorm';
-import { findAllCategoriaDto } from './dto/find-all-categoria.dto';
 
 @Injectable()
 export class CategoriaService {
@@ -18,7 +16,7 @@ export class CategoriaService {
     return this.categoriaRepository.save(categoria);
   }
 
-  async findAll(query: findAllCategoriaDto) {
+  async findAll(query: FindAllCategoriaDto) {
     return await this.categoriaRepository.find({
       where: {
         nome: Like(`%${query.nome}%`)

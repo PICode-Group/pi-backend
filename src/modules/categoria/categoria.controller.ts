@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ConflictException, NotFoundException } from '@nestjs/common';
 import { CategoriaService } from './categoria.service';
-import { CreateCategoriaDto, UpdateCategoriaDto } from 'src/domain/DTOs/Categoria.dto';
+import { CreateCategoriaDto, UpdateCategoriaDto, FindAllCategoriaDto } from './dto/categoria.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Categorias')
@@ -20,8 +20,8 @@ export class CategoriaController {
   @Get()
   @ApiOperation({ summary: 'Listar categorias' })
   @ApiResponse({ status: 200, description: 'Lista de categorias retornada' })
-  async findAll(@Query('nome') nome?: string) {
-    return await this.categoriaService.findAll({ nome });
+  async findAll(@Query() query: FindAllCategoriaDto) {
+    return await this.categoriaService.findAll(query);
   }
 
   @Get(':id')

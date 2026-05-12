@@ -5,3 +5,5 @@ export const createCategoriaSchema = z.object({
 }).strict();
 
 export const updateCategoriaSchema = createCategoriaSchema.partial();
+
+export const findAllCategoriaSchema = createCategoriaSchema.partial();

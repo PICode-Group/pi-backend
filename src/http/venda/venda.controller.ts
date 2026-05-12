@@ -12,7 +12,7 @@ import {
 } from 'src/domain/DTOs/Venda.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
 import { ZodSerializerDto } from 'nestjs-zod';
 
 @ApiTags('Vendas')

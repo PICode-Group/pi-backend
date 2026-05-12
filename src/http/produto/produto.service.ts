@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProdutoDto, UpdateProdutoDto, FiltroProdutoDto } from 'src/domain/DTOs/Produto.dto';
 import { ProdutoRepository } from 'src/infra/repos/produto.repository';
-import { paginate } from 'src/common/utils/pagination.util';
+import { paginate } from 'src/core/utils/pagination.util';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProdutoEntity } from 'src/domain/entities';
 import { Repository } from 'typeorm';

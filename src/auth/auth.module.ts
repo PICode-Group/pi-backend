@@ -11,8 +11,8 @@ import { UsuarioModule } from 'src/http/usuario/usuario.module';
 import { LocalStrategy } from './strategies/local.strategies';
 import { JwtStrategy } from './strategies/jwt.strategies';
 import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { RolesGuard } from './guards/roles.guard';
+import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/core/guards/roles.guard';
 
 @Module({
   imports: [

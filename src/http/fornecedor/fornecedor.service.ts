@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { CreateFornecedorDto, UpdateFornecedorDto, FiltroFornecedorDto } from 'src/domain/DTOs/Fornecedor.dto';
 import { FornecedorRepository } from 'src/infra/repos/fornecedor.repository';
 import { EnderecoRepository } from 'src/infra/repos/endereco.repository';
-import { paginate } from 'src/common/utils/pagination.util';
+import { paginate } from 'src/core/utils/pagination.util';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FornecedorEntity } from 'src/domain/entities';
 import { Repository } from 'typeorm';

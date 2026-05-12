@@ -1,14 +1,35 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateFornecedorDto, UpdateFornecedorDto } from 'src/domain/DTOs/Fornecedor.dto';
+import { CreateFornecedorDto, UpdateFornecedorDto, FiltroFornecedorDto } from 'src/domain/DTOs/Fornecedor.dto';
 import { FornecedorRepository } from 'src/infra/repos/fornecedor.repository';
 import { EnderecoRepository } from 'src/infra/repos/endereco.repository';
+import { paginate } from 'src/common/utils/pagination.util';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FornecedorEntity } from 'src/domain/entities';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class FornecedorService {
   constructor(
     private readonly fornecedorRepository: FornecedorRepository,
     private readonly enderecoRepository: EnderecoRepository,
+    @InjectRepository(FornecedorEntity)
+    private readonly repo: Repository<FornecedorEntity>,
   ) {}
+
+  async listar(filtros: FiltroFornecedorDto) {
+    const queryBuilder = this.repo.createQueryBuilder('f')
+      .leftJoinAndSelect('f.endereco', 'e');
+
+    if (filtros.nome) {
+      queryBuilder.andWhere('f.nome LIKE :nome', { nome: `%${filtros.nome}%` });
+    }
+
+    if (filtros.cnpj) {
+      queryBuilder.andWhere('f.cnpj = :cnpj', { cnpj: filtros.cnpj });
+    }
+
+    return await paginate(queryBuilder, { page: filtros.page, limit: filtros.limit });
+  }
 
   async listarTodos() {
     return await this.fornecedorRepository.buscarTodos();

@@ -5,6 +5,7 @@ import {
   FornecedorEntity, 
   ProdutoEntity, 
   EnderecoEntity,
+  ClienteEntity,
   TipoUsuario,
   StatusUsuario
 } from '../../domain/entities';
@@ -152,6 +153,33 @@ async function runSeed() {
         imagem: 'uploads/placeholder.png'
       }));
       console.log(`Product ${p.nome} created`);
+    }
+  }
+
+  // 5. Seed Clientes (10 registros)
+  const clienteRepo = dataSource.getRepository(ClienteEntity);
+  const clientesData = [
+    { nome: 'Consumidor Final', cpf: '000.000.000-00', email: 'balcao@email.com' },
+    { nome: 'Ana Paula Souza', cpf: '111.222.333-44', email: 'ana.souza@email.com' },
+    { nome: 'Bruno Ferreira', cpf: '222.333.444-55', email: 'bruno.f@email.com' },
+    { nome: 'Carla Dias', cpf: '333.444.555-66', email: 'carla.dias@email.com' },
+    { nome: 'Diego Santos', cpf: '444.555.666-77', email: 'diego.s@email.com' },
+    { nome: 'Elaine Lima', cpf: '555.666.777-88', email: 'elaine.lima@email.com' },
+    { nome: 'Fabio Junior', cpf: '666.777.888-99', email: 'fabio.j@email.com' },
+    { nome: 'Gisele Bündchen', cpf: '777.888.999-00', email: 'gisele@email.com' },
+    { nome: 'Hugo Souza', cpf: '888.999.000-11', email: 'hugo.souza@email.com' },
+    { nome: 'Igor Gomes', cpf: '999.000.111-22', email: 'igor.g@email.com' },
+  ];
+
+  for (const c of clientesData) {
+    const exists = await clienteRepo.findOneBy({ cpf: c.cpf });
+    if (!exists) {
+      await clienteRepo.save(clienteRepo.create({
+        id: uuid(),
+        ...c,
+        telefone: '(11) 9' + Math.floor(10000000 + Math.random() * 90000000),
+      }));
+      console.log(`Client ${c.nome} created`);
     }
   }
 

@@ -1,5 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
-import { createFornecedorSchema, updateFornecedorSchema } from '../Schemas/fornecedor.schema';
+import { createFornecedorSchema, updateFornecedorSchema, filtroFornecedorSchema } from '../Schemas/fornecedor.schema';
 
 export class CreateFornecedorDto extends createZodDto(createFornecedorSchema) {}
 export class UpdateFornecedorDto extends createZodDto(updateFornecedorSchema) {}
+export class FiltroFornecedorDto extends createZodDto(filtroFornecedorSchema) {}

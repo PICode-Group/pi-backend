@@ -4,12 +4,21 @@ import {
   AdicionarItemDto, 
   AplicarDescontoDto, 
   RegistrarPagamentoDto, 
-  FiltroVendaDto 
+  FiltroVendaDto,
+  VendaDiretaDto 
 } from 'src/domain/DTOs/Venda.dto';
 import { VendaRepository } from 'src/infra/repos/venda.repository';
 import { ProdutoRepository } from 'src/infra/repos/produto.repository';
-import { StatusVenda } from 'src/domain/entities/Venda.entity';
+import { 
+  VendaEntity, 
+  ItemVendaEntity, 
+  PagamentoEntity, 
+  StatusVenda, 
+  ProdutoEntity, 
+  UsuarioEntity 
+} from 'src/domain/entities';
 import { DataSource } from 'typeorm';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class VendaService {
@@ -31,10 +40,10 @@ export class VendaService {
     return venda;
   }
 
-  async abrirVenda(dados: CreateVendaDto) {
+  async abrirVenda(dados: CreateVendaDto, usuarioId: string) {
     return await this.repository.salvarVenda({
       cliente_id: dados.cliente_id as any,
-      usuario_id: dados.usuario_id as any,
+      usuario_id: usuarioId as any,
       status: StatusVenda.ABERTA,
       valor_total: 0,
       desconto: 0,
@@ -191,5 +200,89 @@ export class VendaService {
     await this.repository.salvarVenda(venda);
     
     return await this.buscarPorId(vendaId);
+  }
+
+  async vendaDireta(dados: VendaDiretaDto, usuarioId: string) {
+    return await this.dataSource.transaction(async (manager) => {
+      // 1. Criar a Venda
+      const venda = manager.create(VendaEntity, {
+        id: uuid(),
+        cliente_id: dados.cliente_id as any,
+        usuario_id: usuarioId as any,
+        status: StatusVenda.PAGA, // Venda direta já nasce paga/finalizada
+        desconto: dados.desconto || 0,
+        valor_total: 0, // Será calculado abaixo
+      });
+
+      await manager.save(venda);
+
+      let subtotalVenda = 0;
+
+      // 2. Processar Itens
+      for (const itemDados of dados.itens) {
+        const produto = await manager.findOne(ProdutoEntity, {
+          where: { id: itemDados.produto_id },
+        });
+
+        if (!produto) {
+          throw new NotFoundException(`Produto ${itemDados.produto_id} não encontrado`);
+        }
+
+        if (produto.estoque < itemDados.quantidade) {
+          throw new BadRequestException(
+            `Estoque insuficiente para o produto ${produto.nome}. Disponível: ${produto.estoque}`,
+          );
+        }
+
+        const subtotalItem = itemDados.quantidade * Number(produto.preco_venda);
+        subtotalVenda += subtotalItem;
+
+        // Criar item da venda
+        const itemVenda = manager.create(ItemVendaEntity, {
+          id: uuid(),
+          venda_id: venda.id as any,
+          produto_id: produto.id as any,
+          quantidade: itemDados.quantidade,
+          preco_unitario: produto.preco_venda,
+          subtotal: subtotalItem,
+        });
+
+        await manager.save(itemVenda);
+
+        // Baixar estoque
+        produto.estoque -= itemDados.quantidade;
+        await manager.save(produto);
+      }
+
+      // 3. Atualizar Totais da Venda
+      venda.valor_total = Math.max(0, subtotalVenda - venda.desconto);
+      await manager.save(venda);
+
+      // 4. Registrar Pagamento
+      if (dados.pagamento.valor_pago < venda.valor_total) {
+        throw new BadRequestException(
+          `Valor pago (${dados.pagamento.valor_pago}) insuficiente para o total (${venda.valor_total})`,
+        );
+      }
+
+      const pagamento = manager.create(PagamentoEntity, {
+        id: uuid(),
+        venda_id: venda.id as any,
+        tipo: dados.pagamento.tipo,
+        valor_pago: dados.pagamento.valor_pago,
+        data_pagamento: new Date(),
+      });
+
+      await manager.save(pagamento);
+
+      // 5. Retornar a venda completa
+      return await manager.findOne(VendaEntity, {
+        where: { id: venda.id },
+        relations: ['itensVenda', 'itensVenda.produto', 'pagamentos', 'cliente', 'usuario'],
+      });
+    }).catch(err => {
+      console.error('ERRO CRÍTICO NA VENDA DIRETA:', err);
+      throw err;
+    });
   }
 }

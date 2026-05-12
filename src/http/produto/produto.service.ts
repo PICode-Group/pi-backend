@@ -1,13 +1,32 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProdutoDto, UpdateProdutoDto, FiltroProdutoDto } from 'src/domain/DTOs/Produto.dto';
 import { ProdutoRepository } from 'src/infra/repos/produto.repository';
+import { paginate } from 'src/common/utils/pagination.util';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ProdutoEntity } from 'src/domain/entities';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProdutoService {
-  constructor(private readonly produtoRepository: ProdutoRepository) {}
+  constructor(
+    private readonly produtoRepository: ProdutoRepository,
+    @InjectRepository(ProdutoEntity)
+    private readonly repo: Repository<ProdutoEntity>,
+  ) {}
 
   async listar(filtros: FiltroProdutoDto) {
-    return await this.produtoRepository.buscarComFiltros(filtros);
+    const queryBuilder = this.repo.createQueryBuilder('p')
+      .leftJoinAndSelect('p.categoria', 'c');
+
+    if (filtros.nome) {
+      queryBuilder.andWhere('p.nome LIKE :nome', { nome: `%${filtros.nome}%` });
+    }
+    
+    if (filtros.categoria_id) {
+      queryBuilder.andWhere('p.categoria_id = :cat', { cat: filtros.categoria_id });
+    }
+
+    return await paginate(queryBuilder, { page: filtros.page, limit: filtros.limit });
   }
 
   async buscarPorId(id: string) {

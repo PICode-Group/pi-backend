@@ -13,3 +13,9 @@ export { PagamentoEntity, TipoPagamento } from './Pagamento.entity';
 export { EntradaEstoqueEntity, TipoEntrada } from './EntradaEstoque.entity';
 export { ItemEntradaEntity } from './ItemEntrada.entity';
 export { LogEntity } from './Log.entity';
+
+// Views
+export * from './views/EstoqueBaixo.view';
+export * from './views/VendasPeriodo.view';
+export * from './views/ProdutosMaisVendidos.view';
+export * from './views/FaturamentoVendedor.view';

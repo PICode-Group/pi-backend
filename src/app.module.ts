@@ -15,9 +15,14 @@ import { DatabaseModule } from './database/database.module';
 import { CategoriaModule } from './http/categoria/categoria.module';
 import { ClienteModule } from './http/cliente/cliente.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
+import { RelatorioModule } from './http/relatorio/relatorio.module';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
+import { AuditInterceptor } from './auth/interceptors/audit.interceptor';
+import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { LogEntity } from './domain/entities';
 
 @Module({
   imports: [
@@ -37,16 +42,26 @@ import { RolesGuard } from './auth/guards/roles.guard';
     UsuarioModule,
     VendaModule,
     AuthModule,
+    RelatorioModule,
+    TypeOrmModule.forFeature([LogEntity]), // Necessário para o AuditInterceptor
   ],
   controllers: [],
   providers: [
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard, // Primeiro autentica
+      useClass: JwtAuthGuard,
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard, // Depois verifica roles
+      useClass: RolesGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
     },
   ],
 })

@@ -11,8 +11,8 @@ import { VendaEntity } from './Venda.entity';
 import { EntradaEstoqueEntity } from './EntradaEstoque.entity';
 import { LogEntity } from './Log.entity';
 
-import { TipoUsuario } from 'src/auth/enums/tipo-usuario.enum';
-import { StatusUsuario } from 'src/auth/enums/status-usuario.enum';
+import { TipoUsuario } from 'src/modules/auth/enums/tipo-usuario.enum';
+import { StatusUsuario } from 'src/modules/auth/enums/status-usuario.enum';
 
 import * as bcrypt from 'bcrypt';
 

@@ -13,17 +13,25 @@ import {
   UpdateUsuarioDto,
 } from 'src/domain/DTOs/Usuario.dto';
 import { UsuarioService } from 'src/http/usuario/usuario.service';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Usuários')
 @Controller('usuarios')
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 
   @Get(':id')
-  getUser(@Param(' id ') userId: string) {
+  @ApiOperation({ summary: 'Buscar usuário por ID' })
+  @ApiResponse({ status: 200, description: 'Usuário encontrado' })
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
+  getUser(@Param('id') userId: string) {
     return this.usuarioService.getUserById(userId);
   }
 
   @Post()
+  @ApiOperation({ summary: 'Cadastrar novo usuário' })
+  @ApiResponse({ status: 201, description: 'Usuário criado com sucesso!' })
+  @ApiResponse({ status: 400, description: 'Erro na criação do usuário' })
   async createUser(@Body() createUsuarioDto: CreateUsuarioDto) {
     const user = await this.usuarioService.createUsuario(createUsuarioDto);
     if (!user) {
@@ -33,6 +41,8 @@ export class UsuarioController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Atualizar dados de um usuário' })
+  @ApiResponse({ status: 200, description: 'Usuário atualizado com sucesso' })
   async updateUser(
     @Param('id') userId: string,
     @Body() usuarioDto: UpdateUsuarioDto,
@@ -46,6 +56,8 @@ export class UsuarioController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Remover (Inativar) um usuário' })
+  @ApiResponse({ status: 200, description: 'Usuário deletado com sucesso' })
   async deleteUser(@Param('id') userId: string) {
     const usuarioAtualizado = await this.usuarioService.deleteUserById(userId);
 

@@ -9,7 +9,9 @@ import { LoginDto } from 'src/domain/DTOs/Login.dto';
 import { UsuarioService } from 'src/http/usuario/usuario.service';
 import type { Response } from 'express';
 import { TipoUsuario, UsuarioEntity } from 'src/domain/entities';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Autenticação')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -19,6 +21,8 @@ export class AuthController {
 
   @Public()
   @Post('register')
+  @ApiOperation({ summary: 'Registrar um novo usuário e realizar login automático' })
+  @ApiResponse({ status: 201, description: 'Usuário registrado e logado' })
   async register(@Body() body: CreateUsuarioDto, @Res() response: Response) {
     try {
       const usuario = await this.authService.createUser(body);
@@ -33,19 +37,25 @@ export class AuthController {
 
   @Public()
   @Post('login')
+  @ApiOperation({ summary: 'Realizar login e receber cookie JWT' })
+  @ApiResponse({ status: 200, description: 'Login realizado com sucesso' })
+  @ApiResponse({ status: 401, description: 'Credenciais inválidas' })
   async login(@Body() body: LoginDto, @Res() response: Response) {
     const usuario = await this.authService.validateUser(body);
     return this.authService.login(usuario, response);
   }
 
   @Post('logout')
+  @ApiOperation({ summary: 'Realizar logout (limpar cookie JWT)' })
+  @ApiResponse({ status: 200, description: 'Logout realizado com sucesso' })
   logout(@Res() response: Response) {
     return this.authService.logout(response);
   }
 
-  // Versão final limpa
   @Roles(TipoUsuario.ADMIN)
   @Post('create-admin')
+  @ApiOperation({ summary: 'Criar um novo usuário ADMIN (Apenas para ADMINs)' })
+  @ApiResponse({ status: 201, description: 'Admin criado com sucesso' })
   async createAdmin(@Body() body: CreateUsuarioDto, @Res() response: Response) {
     const usuario = await this.usuarioService.createUsuario(body);
 
@@ -61,6 +71,8 @@ export class AuthController {
   }
 
   @Get('me')
+  @ApiOperation({ summary: 'Obter perfil do usuário logado' })
+  @ApiResponse({ status: 200, description: 'Dados do perfil e permissões' })
   getProfile(@CurrentUser() user: UsuarioEntity) {
     return {
       user: user,

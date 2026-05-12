@@ -21,7 +21,7 @@ const dataSource = new DataSource({
   username: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'root',
   database: process.env.DB_NAME || 'itaprime',
-  entities: [__dirname + '/../entities/*.entity{.ts,.js}'],
+  entities: [__dirname + '/../../domain/entities/*.entity{.ts,.js}'],
   synchronize: false,
 });
 
@@ -29,26 +29,51 @@ async function runSeed() {
   await dataSource.initialize();
   console.log('Database connected for seeding...');
 
-  // 1. Seed Usuários
+  // 1. Seed Usuários (10 registros)
   const userRepo = dataSource.getRepository(UsuarioEntity);
-  const adminExists = await userRepo.findOneBy({ login: 'admin@itaprime.com' });
+  const senhaPlana = 'admin12345678';
   
-  if (!adminExists) {
-    const admin = userRepo.create({
-      id: uuid(),
-      nome: 'Administrador',
-      login: 'admin@itaprime.com',
-      senha: await bcrypt.hash('admin123', 10),
-      tipo: TipoUsuario.ADMIN,
-      status: StatusUsuario.ATIVO,
-    });
-    await userRepo.save(admin);
-    console.log('Admin user created');
+  const usersData = [
+    { nome: 'Administrador', login: 'admin@itaprime.com', tipo: TipoUsuario.ADMIN },
+    { nome: 'João Vendedor', login: 'joao@itaprime.com', tipo: TipoUsuario.VENDEDOR },
+    { nome: 'Maria Vendas', login: 'maria@itaprime.com', tipo: TipoUsuario.VENDEDOR },
+    { nome: 'Pedro Estoque', login: 'pedro@itaprime.com', tipo: TipoUsuario.VENDEDOR },
+    { nome: 'Ana Gerente', login: 'ana@itaprime.com', tipo: TipoUsuario.ADMIN },
+    { nome: 'Carlos Silva', login: 'carlos@itaprime.com', tipo: TipoUsuario.VENDEDOR },
+    { nome: 'Julia Souza', login: 'julia@itaprime.com', tipo: TipoUsuario.VENDEDOR },
+    { nome: 'Ricardo Lima', login: 'ricardo@itaprime.com', tipo: TipoUsuario.VENDEDOR },
+    { nome: 'Fernanda Oliveira', login: 'fernanda@itaprime.com', tipo: TipoUsuario.VENDEDOR },
+    { nome: 'Lucas Santos', login: 'lucas@itaprime.com', tipo: TipoUsuario.VENDEDOR },
+  ];
+
+  for (const u of usersData) {
+    let user = await userRepo.findOneBy({ login: u.login });
+    
+    if (user) {
+      user.senha = senhaPlana;
+      user.status = StatusUsuario.ATIVO;
+      user.nome = u.nome;
+      user.tipo = u.tipo;
+      await userRepo.save(user);
+      console.log(`User ${u.nome} updated (password synced)`);
+    } else {
+      await userRepo.save(userRepo.create({
+        id: uuid(),
+        ...u,
+        senha: senhaPlana,
+        status: StatusUsuario.ATIVO,
+      }));
+      console.log(`User ${u.nome} created`);
+    }
   }
 
-  // 2. Seed Categorias
+  // 2. Seed Categorias (10 registros)
   const catRepo = dataSource.getRepository(CategoriaEntity);
-  const categories = ['Eletrônicos', 'Periféricos', 'Acessórios', 'Hardware'];
+  const categories = [
+    'Eletrônicos', 'Periféricos', 'Acessórios', 'Hardware', 
+    'Monitores', 'Cadeiras Gamer', 'Teclados', 'Mouses', 
+    'Áudio', 'Armazenamento'
+  ];
   for (const catName of categories) {
     const exists = await catRepo.findOneBy({ nome: catName });
     if (!exists) {
@@ -57,51 +82,77 @@ async function runSeed() {
     }
   }
 
-  // 3. Seed Fornecedores
+  // 3. Seed Fornecedores (10 registros)
   const fornRepo = dataSource.getRepository(FornecedorEntity);
   const endRepo = dataSource.getRepository(EnderecoEntity);
   
-  const fornExists = await fornRepo.findOneBy({ cnpj: '12.345.678/0001-90' });
-  if (!fornExists) {
-    const endereco = await endRepo.save(endRepo.create({
-      id: uuid(),
-      rua: 'Rua dos Fornecedores',
-      numero: '100',
-      bairro: 'Industrial',
-      cidade: 'São Paulo',
-      estado: 'SP',
-      cep: '01000-000'
-    }));
+  const suppliersData = [
+    { nome: 'Distribuidora Tech', cnpj: '12.345.678/0001-90', email: 'contato@disttech.com' },
+    { nome: 'Logística Global', cnpj: '22.345.678/0001-91', email: 'vendas@logglobal.com' },
+    { nome: 'Importadora Express', cnpj: '32.345.678/0001-92', email: 'sac@importexpress.com' },
+    { nome: 'Mega Hardware', cnpj: '42.345.678/0001-93', email: 'mega@hardware.com' },
+    { nome: 'Forncecedora Alfa', cnpj: '52.345.678/0001-94', email: 'alfa@forn.com' },
+    { nome: 'Beta Suprimentos', cnpj: '62.345.678/0001-95', email: 'beta@supri.com' },
+    { nome: 'Gama Peças', cnpj: '72.345.678/0001-96', email: 'gama@pecas.com' },
+    { nome: 'Delta Componentes', cnpj: '82.345.678/0001-97', email: 'delta@comp.com' },
+    { nome: 'Zeta Imports', cnpj: '92.345.678/0001-98', email: 'zeta@imports.com' },
+    { nome: 'Sigma Eletrônicos', cnpj: '02.345.678/0001-99', email: 'sigma@eletr.com' },
+  ];
 
-    await fornRepo.save(fornRepo.create({
-      id: uuid(),
-      nome: 'Distribuidora Tech',
-      cnpj: '12.345.678/0001-90',
-      email: 'contato@distribuidoratech.com',
-      telefone: '(11) 99999-9999',
-      endereco: endereco
-    }));
-    console.log('Supplier Distribuidora Tech created');
+  for (const f of suppliersData) {
+    const exists = await fornRepo.findOneBy({ cnpj: f.cnpj });
+    if (!exists) {
+      const endereco = await endRepo.save(endRepo.create({
+        id: uuid(),
+        rua: 'Avenida Comercial',
+        numero: Math.floor(Math.random() * 1000).toString(),
+        bairro: 'Centro',
+        cidade: 'São Paulo',
+        estado: 'SP',
+        cep: '01000-000'
+      }));
+
+      await fornRepo.save(fornRepo.create({
+        id: uuid(),
+        ...f,
+        telefone: '(11) 9' + Math.floor(10000000 + Math.random() * 90000000),
+        endereco: endereco
+      }));
+      console.log(`Supplier ${f.nome} created`);
+    }
   }
 
-  // 4. Seed Produtos
+  // 4. Seed Produtos (10 registros)
   const prodRepo = dataSource.getRepository(ProdutoEntity);
-  const prodExists = await prodRepo.findOneBy({ codigo_barras: '7891234567890' });
-  if (!prodExists) {
-    const hardwareCat = await catRepo.findOneBy({ nome: 'Hardware' });
-    await prodRepo.save(prodRepo.create({
-      id: uuid(),
-      nome: 'Memória RAM 16GB DDR4',
-      descricao: 'Memória RAM de alta performance',
-      codigo_barras: '7891234567890',
-      preco_custo: 250.00,
-      preco_venda: 450.00,
-      estoque: 20,
-      estoque_minimo: 5,
-      categoria: hardwareCat,
-      imagem: 'uploads/placeholder.png'
-    }));
-    console.log('Product Memória RAM created');
+  const hardwareCat = await catRepo.findOneBy({ nome: 'Hardware' });
+  const perifCat = await catRepo.findOneBy({ nome: 'Periféricos' });
+
+  const productsData = [
+    { nome: 'Memória RAM 16GB DDR4', preco_custo: 250, preco_venda: 450, codigo_barras: '7891234567890', categoria: hardwareCat },
+    { nome: 'SSD 480GB SATA', preco_custo: 150, preco_venda: 300, codigo_barras: '7891234567891', categoria: hardwareCat },
+    { nome: 'Mouse Gamer RGB', preco_custo: 40, preco_venda: 120, codigo_barras: '7891234567892', categoria: perifCat },
+    { nome: 'Teclado Mecânico', preco_custo: 120, preco_venda: 350, codigo_barras: '7891234567893', categoria: perifCat },
+    { nome: 'Processador i5 12th', preco_custo: 800, preco_venda: 1400, codigo_barras: '7891234567894', categoria: hardwareCat },
+    { nome: 'Placa de Vídeo RTX 3060', preco_custo: 1500, preco_venda: 2800, codigo_barras: '7891234567895', categoria: hardwareCat },
+    { nome: 'Monitor 24" 144Hz', preco_custo: 600, preco_venda: 1100, codigo_barras: '7891234567896', categoria: await catRepo.findOneBy({ nome: 'Monitores' }) },
+    { nome: 'Headset 7.1', preco_custo: 100, preco_venda: 250, codigo_barras: '7891234567897', categoria: await catRepo.findOneBy({ nome: 'Áudio' }) },
+    { nome: 'Cadeira Gamer Black', preco_custo: 400, preco_venda: 900, codigo_barras: '7891234567898', categoria: await catRepo.findOneBy({ nome: 'Cadeiras Gamer' }) },
+    { nome: 'Fonte 600W 80 Plus', preco_custo: 200, preco_venda: 380, codigo_barras: '7891234567899', categoria: hardwareCat },
+  ];
+
+  for (const p of productsData) {
+    const exists = await prodRepo.findOneBy({ codigo_barras: p.codigo_barras });
+    if (!exists) {
+      await prodRepo.save(prodRepo.create({
+        id: uuid(),
+        ...p,
+        descricao: `Descrição do produto ${p.nome}`,
+        estoque: 50,
+        estoque_minimo: 10,
+        imagem: 'uploads/placeholder.png'
+      }));
+      console.log(`Product ${p.nome} created`);
+    }
   }
 
   await dataSource.destroy();

@@ -11,6 +11,8 @@ import type { Response } from 'express';
 import { TipoUsuario, UsuarioEntity } from 'src/domain/entities';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { RegisterDto } from './dto/register.dto';
+
 @ApiTags('Autenticação')
 @Controller('auth')
 export class AuthController {
@@ -23,7 +25,7 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: 'Registrar um novo usuário e realizar login automático' })
   @ApiResponse({ status: 201, description: 'Usuário registrado e logado' })
-  async register(@Body() body: CreateUsuarioDto, @Res() response: Response) {
+  async register(@Body() body: RegisterDto, @Res() response: Response) {
     try {
       const usuario = await this.authService.createUser(body);
       this.authService.login(usuario, response);

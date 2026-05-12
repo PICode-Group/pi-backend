@@ -11,17 +11,10 @@ import { VendaEntity } from './Venda.entity';
 import { EntradaEstoqueEntity } from './EntradaEstoque.entity';
 import { LogEntity } from './Log.entity';
 
+import { TipoUsuario } from 'src/auth/enums/tipo-usuario.enum';
+import { StatusUsuario } from 'src/auth/enums/status-usuario.enum';
+
 import * as bcrypt from 'bcrypt';
-
-export enum TipoUsuario {
-  ADMIN = 'ADMIN',
-  VENDEDOR = 'VENDEDOR',
-}
-
-export enum StatusUsuario {
-  ATIVO = 'ATIVO',
-  INATIVO = 'INATIVO',
-}
 
 @Entity('usuarios')
 export class UsuarioEntity {

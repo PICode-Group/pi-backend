@@ -5,6 +5,7 @@ import { LoginDto } from 'src/domain/DTOs/Login.dto';
 import { CreateUsuarioDto } from 'src/domain/DTOs/Usuario.dto';
 import { StatusUsuario, TipoUsuario, UsuarioEntity } from 'src/domain/entities';
 import { UsuarioRepository } from 'src/infra/repos/usuario.repository';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -79,13 +80,15 @@ export class AuthService {
   }
 
   async createUser(
-    userData: CreateUsuarioDto,
+    userData: RegisterDto | CreateUsuarioDto,
     requestingUserRole?: TipoUsuario,
   ) {
+    const newUser = { ...userData } as CreateUsuarioDto;
+
     if (requestingUserRole !== TipoUsuario.ADMIN) {
-      userData.tipo = TipoUsuario.VENDEDOR;
+      newUser.tipo = TipoUsuario.VENDEDOR;
     }
 
-    return await this.usuarioRepository.registrarUsuario(userData);
+    return await this.usuarioRepository.registrarUsuario(newUser);
   }
 }

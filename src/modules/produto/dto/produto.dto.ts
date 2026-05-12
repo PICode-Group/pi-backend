@@ -1,5 +1,5 @@
 import { createZodDto } from 'nestjs-zod';
-import { createProdutoSchema, updateProdutoSchema, filtroProdutoSchema } from '../Schemas/produto.schema';
+import { createProdutoSchema, updateProdutoSchema, filtroProdutoSchema } from '../schemas/produto.schema';
 
 export class CreateProdutoDto extends createZodDto(createProdutoSchema) {}
 export class UpdateProdutoDto extends createZodDto(updateProdutoSchema) {}

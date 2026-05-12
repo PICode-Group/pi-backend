@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ProdutoService } from './produto.service';
-import { CreateProdutoDto, UpdateProdutoDto, FiltroProdutoDto } from 'src/domain/DTOs/Produto.dto';
+import { CreateProdutoDto, UpdateProdutoDto, FiltroProdutoDto } from './dto/produto.dto';
 import { ApiOperation, ApiResponse, ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';

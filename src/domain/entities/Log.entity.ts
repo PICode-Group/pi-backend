@@ -14,8 +14,8 @@ export class LogEntity {
   @PrimaryColumn('uuid')
   id: string;
 
-  @Column({ type: 'int', nullable: false })
-  usuario_id: number;
+  @Column({ type: 'varchar', length: 36, nullable: false })
+  usuario_id: string;
 
   @ManyToOne(() => UsuarioEntity, (usuario) => usuario.logs, {
     nullable: false,
@@ -26,8 +26,8 @@ export class LogEntity {
   @Column({ type: 'varchar', length: 100, nullable: false })
   acao: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  descricao: string;
+  @Column({ type: 'text', nullable: true })
+  detalhes: string;
 
   @CreateDateColumn({ type: 'datetime' })
   data_log: Date;

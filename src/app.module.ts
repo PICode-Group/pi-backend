@@ -1,23 +1,28 @@
 import { Module } from '@nestjs/common';
-import { EmpresaModule } from './http/empresa/empresa.module';
-import { EnderecoModule } from './http/endereco/endereco.module';
-import { EntradaEstoqueModule } from './http/entrada-estoque/entrada-estoque.module';
-import { FornecedorModule } from './http/fornecedor/fornecedor.module';
-import { ItemEntradaModule } from './http/item-entrada/item-entrada.module';
-import { ItemVendaModule } from './http/item-venda/item-venda.module';
-import { LogModule } from './http/log/log.module';
-import { PagamentoModule } from './http/pagamento/pagamento.module';
-import { ProdutoModule } from './http/produto/produto.module';
-import { UsuarioModule } from './http/usuario/usuario.module';
-import { VendaModule } from './http/venda/venda.module';
+import { EmpresaModule } from './modules/empresa/empresa.module';
+import { EnderecoModule } from './modules/endereco/endereco.module';
+import { EntradaEstoqueModule } from './modules/entrada-estoque/entrada-estoque.module';
+import { FornecedorModule } from './modules/fornecedor/fornecedor.module';
+import { ItemEntradaModule } from './modules/item-entrada/item-entrada.module';
+import { ItemVendaModule } from './modules/item-venda/item-venda.module';
+import { LogModule } from './modules/log/log.module';
+import { PagamentoModule } from './modules/pagamento/pagamento.module';
+import { ProdutoModule } from './modules/produto/produto.module';
+import { UsuarioModule } from './modules/usuario/usuario.module';
+import { VendaModule } from './modules/venda/venda.module';
 import { EnvModule } from './config';
 import { DatabaseModule } from './database/database.module';
-import { CategoriaModule } from './http/categoria/categoria.module';
-import { ClienteModule } from './http/cliente/cliente.module';
-import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { RolesGuard } from './auth/guards/roles.guard';
+import { CategoriaModule } from './modules/categoria/categoria.module';
+import { ClienteModule } from './modules/cliente/cliente.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { RelatorioModule } from './modules/relatorio/relatorio.module';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { JwtAuthGuard } from './core/guards/jwt-auth.guard';
+import { RolesGuard } from './core/guards/roles.guard';
+import { AuditInterceptor } from './core/interceptors/audit.interceptor';
+import { AllExceptionsFilter } from './core/filters/http-exception.filter';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { LogEntity } from './domain/entities';
 
 @Module({
   imports: [
@@ -37,16 +42,26 @@ import { RolesGuard } from './auth/guards/roles.guard';
     UsuarioModule,
     VendaModule,
     AuthModule,
+    RelatorioModule,
+    TypeOrmModule.forFeature([LogEntity]), // Necessário para o AuditInterceptor
   ],
   controllers: [],
   providers: [
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard, // Primeiro autentica
+      useClass: JwtAuthGuard,
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard, // Depois verifica roles
+      useClass: RolesGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
     },
   ],
 })

@@ -8,8 +8,8 @@ export class ItemEntradaEntity {
   @PrimaryColumn('uuid')
   id: string;
 
-  @Column({ type: 'int', nullable: false })
-  entrada_id: number;
+  @Column({ name: 'entrada_id', nullable: false })
+  entrada_id: string;
 
   @ManyToOne(() => EntradaEstoqueEntity, (entrada) => entrada.itensEntrada, {
     nullable: false,
@@ -17,8 +17,8 @@ export class ItemEntradaEntity {
   @JoinColumn({ name: 'entrada_id' })
   entradaEstoque: EntradaEstoqueEntity;
 
-  @Column({ type: 'int', nullable: false })
-  produto_id: number;
+  @Column({ name: 'produto_id', nullable: false })
+  produto_id: string;
 
   @ManyToOne(() => ProdutoEntity, (produto) => produto.itensEntrada, {
     nullable: false,

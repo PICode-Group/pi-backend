@@ -23,8 +23,8 @@ export class EntradaEstoqueEntity {
   @PrimaryColumn('uuid')
   id: string;
 
-  @Column({ type: 'int', nullable: true })
-  fornecedor_id: number;
+  @Column({ name: 'fornecedor_id', nullable: true })
+  fornecedor_id: string;
 
   @ManyToOne(
     () => FornecedorEntity,
@@ -34,8 +34,8 @@ export class EntradaEstoqueEntity {
   @JoinColumn({ name: 'fornecedor_id' })
   fornecedor: FornecedorEntity;
 
-  @Column({ type: 'int', nullable: false })
-  usuario_id: number;
+  @Column({ name: 'usuario_id', nullable: false })
+  usuario_id: string;
 
   @ManyToOne(() => UsuarioEntity, (usuario) => usuario.entradasEstoque, {
     nullable: false,

@@ -60,8 +60,12 @@ export const getTypeOrmConfig = (
   synchronize: configService.get<string>('DB_SYNCHRONIZE') === 'true',
   retryAttempts: configService.get<number>('DB_RETRY_ATTEMPTS', 3),
   retryDelay: configService.get<number>('DB_RETRY_DELAY', 3000),
+  ssl:{
+    rejectUnauthorized: false,
+  },
   extra: {
     connectionLimit: configService.get<number>('DB_CONNECTION_LIMIT', 10),
     connectTimeout: configService.get<number>('DB_CONNECT_TIMEOUT', 10000),
+
   },
 });

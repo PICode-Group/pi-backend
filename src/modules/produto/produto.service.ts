@@ -6,6 +6,7 @@ import { paginate } from 'src/core/utils/pagination.util';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProdutoEntity } from 'src/domain/entities';
 import { Repository } from 'typeorm';
+import * as path from 'path';
 
 @Injectable()
 export class ProdutoService {
@@ -63,20 +64,29 @@ export class ProdutoService {
   }
 
   async atualizarImagem(id: string, caminhoImagem: string) {
+    const fullPath = path.resolve(caminhoImagem);
+    
     try {
       const produto = await this.buscarPorId(id);
       
-      // Se já existia uma imagem, opcionalmente deletar a antiga
-      if (produto.imagem && fs.existsSync(produto.imagem)) {
-        try { fs.unlinkSync(produto.imagem); } catch (e) {}
+      if (produto.imagem) {
+        const oldPath = path.resolve(produto.imagem);
+        if (fs.existsSync(oldPath)) {
+          try { fs.unlinkSync(oldPath); } catch (e) {
+          }
+        }
       }
 
       produto.imagem = caminhoImagem;
       return await this.produtoRepository.salvar(produto);
     } catch (error) {
-      // Deletar o arquivo recém-upado caso ocorra erro (ex: produto não encontrado)
-      if (fs.existsSync(caminhoImagem)) {
-        fs.unlinkSync(caminhoImagem);
+      if (fs.existsSync(fullPath)) {
+        fs.unlinkSync(fullPath);
+      } else {
+        if (fs.existsSync(caminhoImagem)) {
+          fs.unlinkSync(caminhoImagem);
+          console.log('Arquivo removido com sucesso (usando caminho original)!');
+        }
       }
       throw error;
     }

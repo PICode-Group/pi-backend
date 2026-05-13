@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   Entity,
   OneToMany,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { randomUUID } from 'node:crypto';
 import { VendaEntity } from './Venda.entity';
 import { EntradaEstoqueEntity } from './EntradaEstoque.entity';
 import { LogEntity } from './Log.entity';
@@ -19,7 +21,7 @@ import * as bcrypt from 'bcrypt';
 @Entity('usuarios')
 export class UsuarioEntity {
   constructor() {}
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn('uuid')
   id: string;
 
   @Column({ type: 'varchar', length: 100 })
@@ -50,6 +52,13 @@ export class UsuarioEntity {
   logs: LogEntity[];
 
   @BeforeInsert()
+  async handleBeforeInsert() {
+    this.id = randomUUID();
+    if (this.senha) {
+      this.senha = await bcrypt.hash(this.senha, 10);
+    }
+  }
+
   @BeforeUpdate()
   async hashPassword() {
     if (this.senha) {

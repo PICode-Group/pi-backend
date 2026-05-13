@@ -14,9 +14,12 @@ import {
 } from './dto/usuario.dto';
 import { UsuarioService } from './usuario.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/core/decorators/roles.decorator';
+import { TipoUsuario } from 'src/domain/entities';
 
 @ApiTags('Usuários')
 @Controller('usuarios')
+@Roles(TipoUsuario.ADMIN)
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 

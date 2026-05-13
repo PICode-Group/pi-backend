@@ -1,77 +1,100 @@
-### 🔵 Sprint 0 – Configuração e Autenticação (Fundação)
+# ItaPrime ERP - Backend (MVP Concluído)
 
-|ID|Funcionalidade|Descrição|Endpoint|
-|---|---|---|---|
-|A1 (FEITO)|Login de usuário|Autenticar com login/senha, retornar token|`POST /auth/login`|
-|A2|CRUD de usuários|Cadastrar, listar, editar, excluir usuários (admin only)|`GET/POST/PUT/DELETE /usuarios`|
-|A3 (FEITO)|Dados da empresa|Obter/editar informações da loja|`GET/PUT /empresa`|
-|A4 (FEITO)|Logs do sistema|Listar logs com filtros (usuário, ação, data)|`GET /logs`|
+Bem-vindo ao repositório do backend do **ItaPrime ERP**. Este projeto é uma solução completa para gestão de micro e pequenas empresas, focada em controle de estoque, motor de vendas e inteligência de dados.
 
----
+## Arquitetura do Projeto
 
-### 🟢 Sprint 1 – Cadastro Base (Essencial)
+O sistema foi desenvolvido utilizando o framework **NestJS** sob uma **Arquitetura Modular (Vertical)**. Esta abordagem garante que cada domínio de negócio seja independente, facilitando a manutenção e a escalabilidade.
 
-|ID|Funcionalidade|Descrição|Endpoint|
-|---|---|---|---|
-|C1 (FEITO)|CRUD de categorias|Cadastrar, listar, editar, excluir categorias|`GET/POST/PUT/DELETE /categorias`|
-|C2|CRUD de clientes|Com endereço integrado|`GET/POST/PUT/DELETE /clientes`|
-|C3|CRUD de fornecedores|Com endereço integrado|`GET/POST/PUT/DELETE /fornecedores`|
-|C4|CRUD de produtos|Com categoria, preços, estoque inicial, código de barras|`GET/POST/PUT/DELETE /produtos`|
-|C5|Filtros em produtos|Por nome, categoria, estoque baixo, código de barras|`GET /produtos?filtros...`|
-|C6|Upload de imagem|Para produtos|`POST /produtos/{id}/imagem`|
+- **`src/modules`**: Contém todos os domínios de negócio (Vendas, Estoque, Produtos, etc.).
+- **`src/core`**: Centraliza componentes globais como Filtros de Exceção, Interceptors de Auditoria, Guards de Segurança e Decoradores.
+- **`src/domain`**: Define as Entidades globais que mapeiam o banco de dados.
+- **`src/config`**: Centraliza as configurações de ambiente e conexão com o banco de dados.
 
 ---
 
-### 🟡 Sprint 2 – Estoque (Controle avançado)
+## Tecnologias Utilizadas
 
-|ID|Funcionalidade|Descrição|Endpoint|
-|---|---|---|---|
-|E1|Registrar entrada de estoque|Compra/devolução/ajuste de produtos|`POST /entradas-estoque`|
-|E2|Listar entradas de estoque|Com filtros por fornecedor, data, tipo|`GET /entradas-estoque`|
-|E3|Consultar estoque atual do produto|Retornar quantidade + estoque mínimo|`GET /produtos/{id}/estoque`|
-|E4|Produtos com estoque baixo|Usar view `vw_produtos_estoque_baixo`|`GET /relatorios/estoque-baixo`|
-|E5|Histórico de movimentação|Todas as entradas e saídas de um produto|`GET /produtos/{id}/movimentacoes`|
+- **NestJS v11**: Framework Node.js progressivo para aplicações escaláveis.
+- **TypeORM**: ORM para integração robusta com o banco de dados MySQL.
+- **Zod & Nestjs-Zod**: Validação de dados e tipagem forte para DTOs.
+- **Passport & JWT**: Segurança e autenticação baseada em tokens.
+- **Swagger**: Documentação interativa da API.
 
 ---
 
-### 🟠 Sprint 3 – Vendas e Pagamentos (Core business)
+## Segurança e Controle de Acesso (RBAC)
 
-|ID|Funcionalidade|Descrição|Endpoint|
-|---|---|---|---|
-|V1|Abrir nova venda|Criar venda com status "ABERTA"|`POST /vendas`|
-|V2|Adicionar item à venda|Inserir produto na venda aberta|`POST /vendas/{id}/itens`|
-|V3|Remover item da venda|Remover produto da venda|`DELETE /vendas/{id}/itens/{itemId}`|
-|V4|Aplicar desconto|Na venda atual|`PATCH /vendas/{id}/desconto`|
-|V5|Finalizar venda|Mudar status para "PAGA", baixar estoque|`POST /vendas/{id}/finalizar`|
-|V6|Cancelar venda|Mudar status para "CANCELADA", devolver estoque|`POST /vendas/{id}/cancelar`|
-|V7|Registrar pagamento|Um ou mais pagamentos por venda|`POST /vendas/{id}/pagamentos`|
-|V8|Listar vendas|Com filtros por data, cliente, status|`GET /vendas`|
-|V9|Consultar venda completa|Dados da venda + itens + pagamentos|`GET /vendas/{id}`|
+O sistema utiliza controle de acesso baseado em cargos (**Roles**). Os níveis de permissão são:
+
+1.  **ADMIN**: Acesso total ao sistema, incluindo gestão de usuários, logs de auditoria, configurações da empresa e relatórios financeiros sensíveis.
+2.  **VENDEDOR**: Acesso operacional para realizar vendas, consultar produtos e visualizar estoque.
+
+**Recursos Protegidos:**
+- O acesso a `/usuarios`, `/logs` e `/relatorios/vendas-periodo` é restrito a **ADMIN**.
 
 ---
 
-### 🔴 Sprint 4 – Relatórios e Views (Inteligência)
+##  Módulos Principais
 
-|ID|Funcionalidade|Descrição|Endpoint (baseado nas suas views)|
-|---|---|---|---|
-|R1|Produtos mais vendidos|View `vw_produtos_mais_vendidos`|`GET /relatorios/mais-vendidos`|
-|R2|Total vendido por dia|View `vw_total_vendido_por_dia`|`GET /relatorios/vendas-por-dia`|
-|R3|Total vendido por mês|View `vw_total_vendido_por_mes`|`GET /relatorios/vendas-por-mes`|
-|R4|Vendas completas|View `vw_vendas_completas`|`GET /relatorios/vendas-completas`|
-|R5|Vendas finalizadas|View `vw_vendas_finalizadas`|`GET /relatorios/vendas-finalizadas`|
-|R6|Comprovante de venda|View `vw_comprovante_venda` + `vw_itens_vendidos`|`GET /relatorios/comprovante/{vendaId}`|
+### 🛒 Vendas e Pagamentos
+- Motor de vendas com suporte a **Venda Direta** (PDV).
+- Cálculo automático de subtotais, descontos e valores totais.
+- Gestão de múltiplos pagamentos por venda.
+- Status de venda: `ABERTA`, `PAGA`, `CANCELADA`.
+
+### Controle de Estoque
+- Registro de entradas com atualização automática de saldo e custo.
+- **RN: Impedimento de estoque negativo** em todas as transações de venda.
+- Devolução automática de produtos ao estoque em caso de cancelamento de venda.
+
+### 📊 Inteligência de Dados (Views)
+Relatórios nativos baseados em Database Views otimizadas:
+- Produtos com estoque baixo.
+- Ranking de produtos mais vendidos.
+- Performance de vendas por período e por vendedor.
+
+### 📝 Auditoria (Logs)
+Todo o sistema é monitorado por um **Audit Interceptor** que registra:
+- Quem realizou a ação (ID do usuário).
+- Qual foi a ação (Método e Recurso).
+- Payload da requisição para rastreabilidade total.
 
 ---
 
-### 🟣 Sprint 5 – Regras de Negócio e Validações
+## Como Rodar o Projeto
 
-| ID  | Regra                  | Descrição                                                        |     |
-| --- | ---------------------- | ---------------------------------------------------------------- | --- |
-| RN1 | Estoque negativo       | Impedir venda se quantidade > estoque disponível                 |     |
-| RN2 | Baixa automática       | Ao finalizar venda, reduzir `produtos.estoque`                   |     |
-| RN3 | Devolução automática   | Ao cancelar venda, restaurar `produtos.estoque`                  |     |
-| RN4 | Preço de venda         | Usar `preco_venda` do produto no momento do item                 |     |
-| RN5 | Cálculo do subtotal    | `quantidade * preco_unitario`                                    |     |
-| RN6 | Cálculo do valor_total | Soma dos subtotais dos itens - desconto                          |     |
-| RN7 | Log de ações           | Registrar no `logs` toda criação/edição/exclusão relevante       |     |
-| RN8 | Permissões             | Apenas ADMIN pode acessar logs, usuários, relatórios financeiros |     |
+### Pré-requisitos
+- Node.js (v20+)
+- MySQL (v8+)
+
+### Instalação
+1. Clone o repositório.
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
+3. Configure as variáveis de ambiente no arquivo `.env` (use o `.env.example` como base).
+4. Inicialize o banco de dados e as views:
+   ```bash
+   npm run views
+   ```
+
+### Execução
+```bash
+# Modo desenvolvimento (com hot-reload)
+npm run dev
+
+# Modo produção
+npm run build
+npm run start:prod
+```
+
+### Documentação da API
+Após iniciar o servidor, acesse a documentação interativa em:
+`http://localhost:3000/api`
+
+---
+
+## 📄 Licença
+Este projeto é de uso exclusivo para fins de integração e desenvolvimento privado.

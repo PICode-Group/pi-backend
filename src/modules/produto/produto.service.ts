@@ -1,4 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import * as fs from 'fs';
 import { CreateProdutoDto, UpdateProdutoDto, FiltroProdutoDto } from './dto/produto.dto';
 import { ProdutoRepository } from './repositories/produto.repository';
 import { paginate } from 'src/core/utils/pagination.util';
@@ -62,9 +63,23 @@ export class ProdutoService {
   }
 
   async atualizarImagem(id: string, caminhoImagem: string) {
-    const produto = await this.buscarPorId(id);
-    produto.imagem = caminhoImagem;
-    return await this.produtoRepository.salvar(produto);
+    try {
+      const produto = await this.buscarPorId(id);
+      
+      // Se já existia uma imagem, opcionalmente deletar a antiga
+      if (produto.imagem && fs.existsSync(produto.imagem)) {
+        try { fs.unlinkSync(produto.imagem); } catch (e) {}
+      }
+
+      produto.imagem = caminhoImagem;
+      return await this.produtoRepository.salvar(produto);
+    } catch (error) {
+      // Deletar o arquivo recém-upado caso ocorra erro (ex: produto não encontrado)
+      if (fs.existsSync(caminhoImagem)) {
+        fs.unlinkSync(caminhoImagem);
+      }
+      throw error;
+    }
   }
 
   async consultarEstoque(id: string) {

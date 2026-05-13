@@ -19,38 +19,34 @@ export class CategoriaService {
   async findAll(query: FindAllCategoriaDto) {
     return await this.categoriaRepository.find({
       where: {
-        nome: Like(`%${query.nome}%`)
+        nome: query.nome ? Like(`%${query.nome}%`) : undefined
       }
-    })
+    });
   }
 
-  findOne(id: number) {
-    const categoria = this.categoriaRepository.findBy({id});
+  async findOne(id: number) {
+    const categoria = await this.categoriaRepository.findOneBy({ id });
 
     if (!categoria) {
-      throw new NotFoundException(`Categoria ${id} não existe.`)
+      throw new NotFoundException(`Categoria ${id} não existe.`);
     }
 
     return categoria;
   }
 
   async update(id: number, updateCategoriaDto: UpdateCategoriaDto) {
-    let categoria = await this.categoriaRepository.findOneBy({id})
+    const categoria = await this.findOne(id);
 
-    if (!categoria) {
-      throw new NotFoundException(`Categoria ${id} não existe.`)
+    if (updateCategoriaDto.nome) {
+      categoria.nome = updateCategoriaDto.nome;
     }
 
-    if(updateCategoriaDto.nome) {
-      categoria.nome = updateCategoriaDto.nome
-    } 
-
-    await this.categoriaRepository.save(categoria)
-
-    return categoria;
+    return await this.categoriaRepository.save(categoria);
   }
 
-  remove(id: number) {
-    return this.categoriaRepository.delete(id);
+  async remove(id: number) {
+    const categoria = await this.findOne(id);
+    await this.categoriaRepository.delete(id);
+    return { mensagem: `Categoria ${categoria.nome} removida com sucesso` };
   }
 }

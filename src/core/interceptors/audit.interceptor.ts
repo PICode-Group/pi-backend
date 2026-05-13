@@ -36,14 +36,18 @@ export class AuditInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap(() => {
-        if (user) {
-          const acao = this.getAcao(method, url);
-          this.logRepository.save({
-            id: uuid(),
-            usuario_id: user.userId,
-            acao: acao,
-            detalhes: `Método: ${method} | URL: ${url} | Payload: ${JSON.stringify(request.body).substring(0, 500)}`,
-          }).catch(err => console.error('Erro ao salvar log de auditoria:', err));
+        try {
+          if (user && user.userId) {
+            const acao = this.getAcao(method, url || '');
+            this.logRepository.save({
+              id: uuid(),
+              usuario_id: user.userId,
+              acao: acao,
+              detalhes: `Método: ${method} | URL: ${url} | Payload: ${JSON.stringify(request.body || {}).substring(0, 500)}`,
+            }).catch(err => console.error('Erro ao salvar log de auditoria:', err));
+          }
+        } catch (e) {
+          console.error('Erro no AuditInterceptor:', e);
         }
       }),
     );

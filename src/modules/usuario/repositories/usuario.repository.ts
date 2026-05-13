@@ -56,6 +56,6 @@ export class UsuarioRepository {
   }
 
   async findUserByEmail(userEmail: string) {
-    return this.usuarioRepository.findOne({ where: { login: userEmail } });
+    return await this.usuarioRepository.findOne({ where: { login: userEmail } });
   }
 }

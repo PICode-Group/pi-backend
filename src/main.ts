@@ -1,8 +1,36 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ZodValidationPipe } from 'nestjs-zod';
+import cookieParser from 'cookie-parser';
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  app.useGlobalPipes(new ZodValidationPipe());
+
+  app.use(cookieParser());
+
+  app.enableCors({
+    origin: 'http://localhost:3001',
+    credentials: true,
+  });
+
+  const config = new DocumentBuilder()
+    .setTitle('Itaprime')
+    .setVersion('1.0')
+    .setDescription('Documentação da API de gerenciamento da loja ITAPRIME')
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, documentFactory);
+
+  await app.listen(process.env.PORT ?? 3000).then(() => {
+    console.log(
+      `API rodando na URL: ${process.env.API_URL}:${process.env.API_PORT}`,
+    );
+    console.log(
+      `Swagger rodando na URL:  ${process.env.API_URL}:${process.env.API_PORT}/api`,
+    );
+  });
 }
 bootstrap();

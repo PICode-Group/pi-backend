@@ -1,98 +1,77 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+### 🔵 Sprint 0 – Configuração e Autenticação (Fundação)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+|ID|Funcionalidade|Descrição|Endpoint|
+|---|---|---|---|
+|A1 (FEITO)|Login de usuário|Autenticar com login/senha, retornar token|`POST /auth/login`|
+|A2|CRUD de usuários|Cadastrar, listar, editar, excluir usuários (admin only)|`GET/POST/PUT/DELETE /usuarios`|
+|A3 (FEITO)|Dados da empresa|Obter/editar informações da loja|`GET/PUT /empresa`|
+|A4 (FEITO)|Logs do sistema|Listar logs com filtros (usuário, ação, data)|`GET /logs`|
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+### 🟢 Sprint 1 – Cadastro Base (Essencial)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+|ID|Funcionalidade|Descrição|Endpoint|
+|---|---|---|---|
+|C1 (FEITO)|CRUD de categorias|Cadastrar, listar, editar, excluir categorias|`GET/POST/PUT/DELETE /categorias`|
+|C2|CRUD de clientes|Com endereço integrado|`GET/POST/PUT/DELETE /clientes`|
+|C3|CRUD de fornecedores|Com endereço integrado|`GET/POST/PUT/DELETE /fornecedores`|
+|C4|CRUD de produtos|Com categoria, preços, estoque inicial, código de barras|`GET/POST/PUT/DELETE /produtos`|
+|C5|Filtros em produtos|Por nome, categoria, estoque baixo, código de barras|`GET /produtos?filtros...`|
+|C6|Upload de imagem|Para produtos|`POST /produtos/{id}/imagem`|
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+### 🟡 Sprint 2 – Estoque (Controle avançado)
 
-## Compile and run the project
+|ID|Funcionalidade|Descrição|Endpoint|
+|---|---|---|---|
+|E1|Registrar entrada de estoque|Compra/devolução/ajuste de produtos|`POST /entradas-estoque`|
+|E2|Listar entradas de estoque|Com filtros por fornecedor, data, tipo|`GET /entradas-estoque`|
+|E3|Consultar estoque atual do produto|Retornar quantidade + estoque mínimo|`GET /produtos/{id}/estoque`|
+|E4|Produtos com estoque baixo|Usar view `vw_produtos_estoque_baixo`|`GET /relatorios/estoque-baixo`|
+|E5|Histórico de movimentação|Todas as entradas e saídas de um produto|`GET /produtos/{id}/movimentacoes`|
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+### 🟠 Sprint 3 – Vendas e Pagamentos (Core business)
 
-# production mode
-$ npm run start:prod
-```
+|ID|Funcionalidade|Descrição|Endpoint|
+|---|---|---|---|
+|V1|Abrir nova venda|Criar venda com status "ABERTA"|`POST /vendas`|
+|V2|Adicionar item à venda|Inserir produto na venda aberta|`POST /vendas/{id}/itens`|
+|V3|Remover item da venda|Remover produto da venda|`DELETE /vendas/{id}/itens/{itemId}`|
+|V4|Aplicar desconto|Na venda atual|`PATCH /vendas/{id}/desconto`|
+|V5|Finalizar venda|Mudar status para "PAGA", baixar estoque|`POST /vendas/{id}/finalizar`|
+|V6|Cancelar venda|Mudar status para "CANCELADA", devolver estoque|`POST /vendas/{id}/cancelar`|
+|V7|Registrar pagamento|Um ou mais pagamentos por venda|`POST /vendas/{id}/pagamentos`|
+|V8|Listar vendas|Com filtros por data, cliente, status|`GET /vendas`|
+|V9|Consultar venda completa|Dados da venda + itens + pagamentos|`GET /vendas/{id}`|
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+### 🔴 Sprint 4 – Relatórios e Views (Inteligência)
 
-# e2e tests
-$ npm run test:e2e
+|ID|Funcionalidade|Descrição|Endpoint (baseado nas suas views)|
+|---|---|---|---|
+|R1|Produtos mais vendidos|View `vw_produtos_mais_vendidos`|`GET /relatorios/mais-vendidos`|
+|R2|Total vendido por dia|View `vw_total_vendido_por_dia`|`GET /relatorios/vendas-por-dia`|
+|R3|Total vendido por mês|View `vw_total_vendido_por_mes`|`GET /relatorios/vendas-por-mes`|
+|R4|Vendas completas|View `vw_vendas_completas`|`GET /relatorios/vendas-completas`|
+|R5|Vendas finalizadas|View `vw_vendas_finalizadas`|`GET /relatorios/vendas-finalizadas`|
+|R6|Comprovante de venda|View `vw_comprovante_venda` + `vw_itens_vendidos`|`GET /relatorios/comprovante/{vendaId}`|
 
-# test coverage
-$ npm run test:cov
-```
+---
 
-## Deployment
+### 🟣 Sprint 5 – Regras de Negócio e Validações
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| ID  | Regra                  | Descrição                                                        |     |
+| --- | ---------------------- | ---------------------------------------------------------------- | --- |
+| RN1 | Estoque negativo       | Impedir venda se quantidade > estoque disponível                 |     |
+| RN2 | Baixa automática       | Ao finalizar venda, reduzir `produtos.estoque`                   |     |
+| RN3 | Devolução automática   | Ao cancelar venda, restaurar `produtos.estoque`                  |     |
+| RN4 | Preço de venda         | Usar `preco_venda` do produto no momento do item                 |     |
+| RN5 | Cálculo do subtotal    | `quantidade * preco_unitario`                                    |     |
+| RN6 | Cálculo do valor_total | Soma dos subtotais dos itens - desconto                          |     |
+| RN7 | Log de ações           | Registrar no `logs` toda criação/edição/exclusão relevante       |     |
+| RN8 | Permissões             | Apenas ADMIN pode acessar logs, usuários, relatórios financeiros |     |

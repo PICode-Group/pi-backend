@@ -6,7 +6,7 @@ USE itaprime;
 -- ENDEREÇOS
 -- ========================
 CREATE TABLE enderecos (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id VARCHAR(255) PRIMARY KEY,
   rua VARCHAR(100),
   numero VARCHAR(10),
   bairro VARCHAR(60),
@@ -16,7 +16,7 @@ CREATE TABLE enderecos (
 );
 
 -- ========================
--- EMPRESA
+-- EMPRESA (id INT)
 -- ========================
 CREATE TABLE empresa (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -25,7 +25,7 @@ CREATE TABLE empresa (
   cnpj VARCHAR(18),
   telefone VARCHAR(20),
   email VARCHAR(100),
-  endereco_id INT,
+  endereco_id VARCHAR(255),
   FOREIGN KEY (endereco_id) REFERENCES enderecos(id)
 );
 
@@ -33,12 +33,12 @@ CREATE TABLE empresa (
 -- CLIENTES
 -- ========================
 CREATE TABLE clientes (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id VARCHAR(255) PRIMARY KEY,
   nome VARCHAR(100) NOT NULL,
   cpf VARCHAR(14),  
   telefone VARCHAR(20),
   email VARCHAR(100),
-  endereco_id INT,
+  endereco_id VARCHAR(255),
   data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (cpf),
   FOREIGN KEY (endereco_id) REFERENCES enderecos(id)
@@ -48,12 +48,12 @@ CREATE TABLE clientes (
 -- FORNECEDORES
 -- ========================
 CREATE TABLE fornecedores (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id VARCHAR(255) PRIMARY KEY,
   nome VARCHAR(100) NOT NULL,
   cnpj VARCHAR(18),
   telefone VARCHAR(20),
   email VARCHAR(100),
-  endereco_id INT,
+  endereco_id VARCHAR(255),
   data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (cnpj),
   FOREIGN KEY (endereco_id) REFERENCES enderecos(id)
@@ -63,7 +63,7 @@ CREATE TABLE fornecedores (
 -- USUÁRIOS
 -- ========================
 CREATE TABLE usuarios (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id VARCHAR(255) PRIMARY KEY,
   nome VARCHAR(100) NOT NULL,
   login VARCHAR(50) NOT NULL UNIQUE,
   senha VARCHAR(255) NOT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE usuarios (
 );
 
 -- ========================
--- CATEGORIAS
+-- CATEGORIAS (id INT)
 -- ========================
 CREATE TABLE categorias (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -84,11 +84,11 @@ CREATE TABLE categorias (
 -- PRODUTOS
 -- ========================
 CREATE TABLE produtos (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id VARCHAR(255) PRIMARY KEY,
   nome VARCHAR(100) NOT NULL,
   descricao TEXT,
   codigo_barras VARCHAR(50) UNIQUE,
-  categoria_id INT,
+  categoria_id INT,  -- Referencia a tabela categorias (INT)
   preco_custo DECIMAL(10,2) NOT NULL,
   preco_venda DECIMAL(10,2) NOT NULL,
   estoque INT NOT NULL DEFAULT 0,
@@ -102,9 +102,9 @@ CREATE TABLE produtos (
 -- VENDAS
 -- ========================
 CREATE TABLE vendas (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  cliente_id INT,
-  usuario_id INT NOT NULL,
+  id VARCHAR(255) PRIMARY KEY,
+  cliente_id VARCHAR(255),
+  usuario_id VARCHAR(255) NOT NULL,
   data_venda DATETIME DEFAULT CURRENT_TIMESTAMP,
   desconto DECIMAL(10,2) DEFAULT 0,
   valor_total DECIMAL(10,2) DEFAULT 0,
@@ -117,9 +117,9 @@ CREATE TABLE vendas (
 -- ITENS DA VENDA
 -- ========================
 CREATE TABLE itens_venda (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  venda_id INT NOT NULL,
-  produto_id INT NOT NULL,
+  id VARCHAR(255) PRIMARY KEY,
+  venda_id VARCHAR(255) NOT NULL,
+  produto_id VARCHAR(255) NOT NULL,
   quantidade INT NOT NULL,
   preco_unitario DECIMAL(10,2) NOT NULL,
   subtotal DECIMAL(10,2) NOT NULL,
@@ -131,8 +131,8 @@ CREATE TABLE itens_venda (
 -- PAGAMENTOS
 -- ========================
 CREATE TABLE pagamentos (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  venda_id INT NOT NULL,
+  id VARCHAR(255) PRIMARY KEY,
+  venda_id VARCHAR(255) NOT NULL,
   tipo ENUM('DINHEIRO','PIX','DEBITO','CREDITO') NOT NULL,
   valor_pago DECIMAL(10,2) NOT NULL,
   data_pagamento DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -143,9 +143,9 @@ CREATE TABLE pagamentos (
 -- ENTRADAS DE ESTOQUE
 -- ========================
 CREATE TABLE entradas_estoque (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  fornecedor_id INT,
-  usuario_id INT NOT NULL,
+  id VARCHAR(255) PRIMARY KEY,
+  fornecedor_id VARCHAR(255),
+  usuario_id VARCHAR(255) NOT NULL,
   data_entrada DATETIME DEFAULT CURRENT_TIMESTAMP,
   tipo ENUM('COMPRA','DEVOLUCAO','AJUSTE') DEFAULT 'COMPRA',
   valor_total DECIMAL(10,2),
@@ -158,9 +158,9 @@ CREATE TABLE entradas_estoque (
 -- ITENS DA ENTRADA
 -- ========================
 CREATE TABLE itens_entrada (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  entrada_id INT NOT NULL,
-  produto_id INT NOT NULL,
+  id VARCHAR(255) PRIMARY KEY,
+  entrada_id VARCHAR(255) NOT NULL,
+  produto_id VARCHAR(255) NOT NULL,
   quantidade INT NOT NULL,
   preco_custo DECIMAL(10,2) NOT NULL,
   subtotal DECIMAL(10,2) NOT NULL,
@@ -172,10 +172,10 @@ CREATE TABLE itens_entrada (
 -- LOGS
 -- ========================
 CREATE TABLE logs (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  usuario_id INT NOT NULL,
+  id VARCHAR(255) PRIMARY KEY,
+  usuario_id VARCHAR(255) NOT NULL,
   acao VARCHAR(100) NOT NULL,
-  descricao VARCHAR(255),
+  detalhes TEXT,
   data_log DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
@@ -237,6 +237,7 @@ SELECT
   DATE(v.data_venda) AS dia,
   SUM(v.valor_total) AS total_vendido
 FROM vendas v
+WHERE v.status = 'PAGA'
 GROUP BY DATE(v.data_venda)
 ORDER BY dia DESC;
 
@@ -245,6 +246,7 @@ SELECT
   DATE_FORMAT(v.data_venda, '%Y-%m') AS mes,
   SUM(v.valor_total) AS total_vendido
 FROM vendas v
+WHERE v.status = 'PAGA'
 GROUP BY DATE_FORMAT(v.data_venda, '%Y-%m')
 ORDER BY mes DESC;
 

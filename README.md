@@ -11,6 +11,10 @@ O sistema foi desenvolvido utilizando o framework **NestJS** sob uma **Arquitetu
 - **`src/domain`**: Define as Entidades globais que mapeiam o banco de dados.
 - **`src/config`**: Centraliza as configurações de ambiente e conexão com o banco de dados.
 
+> [!TIP]
+> Para uma visão detalhada dos fluxos de dados, diagramas e padrões técnicos, consulte a [Documentação de Arquitetura](./DOCUMENTATION.md).
+
+
 ---
 
 ## Tecnologias Utilizadas

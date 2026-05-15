@@ -17,13 +17,16 @@ dotenv.config();
 
 const dataSource = new DataSource({
   type: 'mysql',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT) || 3306,
-  username: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'root',
-  database: process.env.DB_NAME || 'itaprime',
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT),
+  username: process.env.DB_USERNAME ,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
   entities: [__dirname + '/../../domain/entities/*.entity{.ts,.js}'],
   synchronize: false,
+  ssl:{
+    rejectUnauthorized: false
+  }
 });
 
 async function runSeed() {

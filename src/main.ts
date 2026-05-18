@@ -15,32 +15,22 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
+  const allowedOrigins = [
+    'http://localhost:3001',
+    'http://localhost:4200',
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:4200',
+    'https://pi-frontend-three.vercel.app',
+  ];
+
+  const frontendUrl = process.env.FRONTEND_URL;
+  if (frontendUrl) {
+    const customOrigins = frontendUrl.split(',').map(o => o.trim());
+    allowedOrigins.push(...customOrigins);
+  }
+
   app.enableCors({
-    origin: (origin, callback) => {
-      if (!origin) {
-        callback(null, true);
-        return;
-      }
-      const allowedOrigins = [
-        'http://localhost:3001',
-        'http://localhost:4200',
-        'http://127.0.0.1:3001',
-        'http://127.0.0.1:4200',
-      ];
-      const frontendUrl = process.env.FRONTEND_URL;
-      if (frontendUrl) {
-        const customOrigins = frontendUrl.split(',').map(o => o.trim());
-        allowedOrigins.push(...customOrigins);
-      }
-      const isAllowed = allowedOrigins.includes(origin) ||
-                        origin.endsWith('.onrender.com') ||
-                        origin.endsWith('.vercel.app');
-      if (isAllowed) {
-        callback(null, true);
-      } else {
-        callback(null, true);
-      }
-    },
+    origin: allowedOrigins,
     credentials: true,
   });
 

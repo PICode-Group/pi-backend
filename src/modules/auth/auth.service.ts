@@ -47,10 +47,12 @@ export class AuthService {
 
     const token = this.jwtService.sign(payload);
 
+    const isProd = process.env.NODE_ENV === 'production';
+
     response.cookie('access_token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
     });
@@ -67,10 +69,12 @@ export class AuthService {
   }
 
   logout(response: Response) {
+    const isProd = process.env.NODE_ENV === 'production';
+
     response.clearCookie('access_token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
       path: '/',
     });
 

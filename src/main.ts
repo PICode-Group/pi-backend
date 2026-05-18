@@ -21,6 +21,7 @@ async function bootstrap() {
     'http://127.0.0.1:3001',
     'http://127.0.0.1:4200',
     'https://pi-frontend-three.vercel.app',
+    'https://itaprime.vercel.app',
   ];
 
   const frontendUrl = process.env.FRONTEND_URL;

@@ -16,12 +16,31 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: [
-      'http://localhost:3001',
-      'http://localhost:4200',
-      'http://127.0.0.1:3001',
-      'http://127.0.0.1:4200',
-    ],
+    origin: (origin, callback) => {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+      const allowedOrigins = [
+        'http://localhost:3001',
+        'http://localhost:4200',
+        'http://127.0.0.1:3001',
+        'http://127.0.0.1:4200',
+      ];
+      const frontendUrl = process.env.FRONTEND_URL;
+      if (frontendUrl) {
+        const customOrigins = frontendUrl.split(',').map(o => o.trim());
+        allowedOrigins.push(...customOrigins);
+      }
+      const isAllowed = allowedOrigins.includes(origin) ||
+                        origin.endsWith('.onrender.com') ||
+                        origin.endsWith('.vercel.app');
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
     credentials: true,
   });
 

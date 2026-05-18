@@ -28,6 +28,8 @@ export const filtroVendaSchema = z.object({
   status: z.nativeEnum(StatusVenda).optional(),
   data_inicio: z.string().optional(),
   data_fim: z.string().optional(),
+  page: z.preprocess((val) => Number(val), z.number().min(1).default(1)).optional(),
+  limit: z.preprocess((val) => Number(val), z.number().min(1).max(100).default(10)).optional(),
 }).partial();
 
 export const vendaDiretaSchema = z.object({

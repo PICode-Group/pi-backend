@@ -47,7 +47,7 @@ export class ProdutoEntity {
   @Column({ type: 'int', default: 0 })
   estoque_minimo: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   imagem: string;
 
   @CreateDateColumn({ type: 'datetime' })

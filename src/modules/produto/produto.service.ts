@@ -48,6 +48,7 @@ export class ProdutoService {
     return await this.produtoRepository.salvar({
       ...dados,
       estoque: (dados as any).estoque_inicial || 0,
+      imagem: dados.imagem || 'uploads/placeholder.png',
     });
   }
 

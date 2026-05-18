@@ -3,11 +3,15 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ZodValidationPipe } from 'nestjs-zod';
 import cookieParser from 'cookie-parser';
+import * as express from 'express';
+import { join } from 'path';
 
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ZodValidationPipe());
+
+  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   app.use(cookieParser());
 

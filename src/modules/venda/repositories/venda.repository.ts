@@ -6,6 +6,7 @@ import { PagamentoEntity } from 'src/domain/entities/Pagamento.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { FiltroVendaDto } from '../dto/venda.dto';
+import { paginate } from 'src/core/utils/pagination.util';
 
 @Injectable()
 export class VendaRepository {
@@ -39,7 +40,9 @@ export class VendaRepository {
       query.andWhere('venda.data_venda <= :fim', { fim: filtros.data_fim });
     }
 
-    return await query.getMany();
+    query.orderBy('venda.data_venda', 'DESC');
+
+    return await paginate(query, { page: filtros.page, limit: filtros.limit });
   }
 
   async buscarPorId(id: string) {

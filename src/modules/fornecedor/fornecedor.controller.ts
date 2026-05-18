@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { FornecedorService } from './fornecedor.service';
-import { CreateFornecedorDto, UpdateFornecedorDto } from './dto/fornecedor.dto';
+import { CreateFornecedorDto, UpdateFornecedorDto, FiltroFornecedorDto } from './dto/fornecedor.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Fornecedores')
@@ -9,10 +9,10 @@ export class FornecedorController {
   constructor(private readonly fornecedorService: FornecedorService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Listar todos os fornecedores' })
-  @ApiResponse({ status: 200, description: 'Lista de fornecedores retornada com sucesso' })
-  async listar() {
-    return await this.fornecedorService.listarTodos();
+  @ApiOperation({ summary: 'Listar fornecedores com filtros e paginação' })
+  @ApiResponse({ status: 200, description: 'Lista de fornecedores paginada retornada com sucesso' })
+  async listar(@Query() filtros: FiltroFornecedorDto) {
+    return await this.fornecedorService.listar(filtros);
   }
 
   @Get(':id')
